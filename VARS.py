@@ -1,3 +1,5 @@
+DISCORD_CRED_FP = "discord_creds.json"
+DISCORD_RECORDING_CHAN = 1237290039516467242 
 
 IM_DIR = "images"
 VIDEO_TMP_DIR = "videos_tmp"

@@ -42,9 +42,7 @@ class Camera:
         self.recording_i = -1
         self.recording_curr = None
 
-        self.start = dt.datetime.now()
         self.c = -1
-        self.c2 = -1
 
     def read(self):
         # Camera
@@ -54,13 +52,6 @@ class Camera:
         self.c += 1
 
         if self.c % RECORD_EVERY != 0: return True, None
-
-        self.c2 += 1
-        EVERY = 10
-        if self.c2 % EVERY == 0:
-            avg_fps = EVERY / (dt.datetime.now() - self.start).total_seconds()
-            self.start = dt.datetime.now()
-            print(f"FPS: {avg_fps:.2f}")
 
         tl = CROP[0]
         br = CROP[1]
@@ -132,9 +123,6 @@ class Average:
         average -= np.min(average)
         average /= np.max(average)
         average *= 255
-        cv2.imshow("average", average.astype(np.uint8))
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            ...
         sq_dist = np.sum((gray - average) ** 2)
         return sq_dist
 
