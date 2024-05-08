@@ -3,9 +3,10 @@ import cv2
 import subprocess
 import time
 import numpy as np
-import datetime as dt
 
 from VARS import *
+from common import log
+
 
 EMPTY_FRAME = np.zeros((FRAME_HEIGHT, FRAME_WIDTH), dtype=np.uint8)
 
@@ -128,10 +129,10 @@ class Average:
 
 
 def main():
-    print("Opening camera...")
+    log("Opening camera...")
     cap = Camera()
 
-    print("Starting main loop...")
+    log("Starting main loop...")
     avg = Average(cap.queue)
     prev_d = 0
     while True:
@@ -140,7 +141,7 @@ def main():
         if gray is None: continue
         d = avg.update(cap.queue_i, gray)
         if d > prev_d * START_THRESHOLD:
-            print("Motion detected!")
+            log("MOTION DETECTED!")
             cap.record_start()
         prev_d = d
 

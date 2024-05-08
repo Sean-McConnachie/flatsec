@@ -7,6 +7,7 @@ import json
 import discord
 
 from VARS import *
+from common import log
 
 class DiscordClient(discord.Client):
     def __init__(self, video_path: str, *args, **kwargs):
@@ -14,24 +15,29 @@ class DiscordClient(discord.Client):
         self.video_path = video_path
 
     async def on_ready(self):
-        print(f"Logged in as {self.user}")
         channel = self.get_channel(DISCORD_RECORDING_CHAN)
-        await channel.send(file=discord.File(self.video_path))
-        await self.close()
-        print("Logged out")
-        sys.exit(0)
+        log(f"Uploading video to discord...")
+        try:
+            await channel.send(file=discord.File(self.video_path))
+            await self.close()
+            sys.exit(0)
+        except:
+            ...
 
 
 def upload_to_discord(video_path: str):
     with open(DISCORD_CRED_FP, mode='r') as f:
         creds = json.load(f)
-    intents = discord.Intents.default()
-    client = DiscordClient(video_path=video_path, intents=intents)
-    client.run(creds["token"])
+    try:
+        intents = discord.Intents.default()
+        client = DiscordClient(video_path=video_path, intents=intents)
+        client.run(creds["token"])
+    except:
+        log("Closing discord client...")
     
 
 def write_video(video_t: int):
-    print("Creating video...")
+    log("Creating video...")
     im_dir = os.path.join(VIDEO_TMP_DIR, str(video_t))
     image_fps = sorted([img for img in os.listdir(im_dir) if img.endswith(".jpg")])
 
@@ -49,7 +55,7 @@ def write_video(video_t: int):
         os.remove(im_fp)
     video.release()
     os.rmdir(im_dir)
-    print(f"Video created: {ofp}")
+    log(f"Video created: {ofp}")
     upload_to_discord(ofp)
 
 if __name__ == "__main__":
