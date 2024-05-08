@@ -39,6 +39,17 @@ AVERAGE_EVERY = 2
 DISCORD_RECORDING_CHAN = 1237290039516467255
 ```
 
+### Discord bot
+Follow [these steps](https://discordpy.readthedocs.io/en/latest/discord.html) to create a bot.
+
+Make a file named `discord_creds.json` in the root of your `flatsec` directory.
+
+```json
+{
+    "token": "<YOUR TOKEN>"
+}
+```
+
 ### Running
 We run it on a Raspberry Pi 5 with a systemd service. `tmux` is nice because it lets you tune parameters without restarting the service. Use `tmux a -t flatsec` to join the active terminal.
 
