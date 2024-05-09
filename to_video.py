@@ -41,9 +41,13 @@ def write_video(video_t: int):
     im_dir = os.path.join(VIDEO_TMP_DIR, str(video_t))
     image_fps = sorted([img for img in os.listdir(im_dir) if img.endswith(".jpg")])
 
+    total_time = (int(image_fps[-1].split(".")[0]) - int(image_fps[0].split(".")[0])) / 1000
+    fps = len(image_fps) / total_time
+    log(f"Actual FPS: {fps}")
+
     ofp = os.path.join(VIDEO_DIR, f"{video_t}.mp4")
     shape = cv2.imread(os.path.join(im_dir, image_fps[0])).shape
-    video = cv2.VideoWriter(ofp, cv2.VideoWriter_fourcc(*"mp4v"), REC_FPS, (shape[1], shape[0]))
+    video = cv2.VideoWriter(ofp, cv2.VideoWriter_fourcc(*"mp4v"), fps, (shape[1], shape[0]))
     for image in image_fps:
         im_t = int(image.split(".")[0])
         im_tstr = dt.datetime.fromtimestamp(im_t / 1000).strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -56,7 +60,7 @@ def write_video(video_t: int):
     video.release()
     os.rmdir(im_dir)
     log(f"Video created: {ofp}")
-    upload_to_discord(ofp)
+    # upload_to_discord(ofp)
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

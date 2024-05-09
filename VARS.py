@@ -1,5 +1,6 @@
 # Top left and bottom right corners of the crop
-CROP = ((800, 438), (1140, 764))
+CROP = ((832, 415), (1177, 750))
+# CROP = ((0, 0), (1920, 1080))
 # Tune this parameter until you stop getting triggers when nothing is happening (lower = more sensitive)
 START_THRESHOLD = 1.5
 # Number of seconds to keep before the first bit of motion is detected
@@ -12,9 +13,9 @@ CAM_HEIGHT = 1080
 CAM_WIDTH = 1920
 CAM_FPS = 30
 # 1 = keep every frame, 2 = keep every other frame, 3 = keep every third frame, etc.
-RECORD_EVERY = 1
+RECORD_EVERY = 2
 # Of the frames that are being kept, average every n frames
-AVERAGE_EVERY = 2
+AVERAGE_N = 5
 # Discord channel ID to send recordings to
 DISCORD_RECORDING_CHAN = 1237290039516467242 
 

@@ -3,6 +3,7 @@ import cv2
 import subprocess
 import time
 import numpy as np
+import datetime as dt
 
 from VARS import *
 from common import log
@@ -43,6 +44,8 @@ class Camera:
         self.recording_i = -1
         self.recording_curr = None
 
+        # self.start = dt.datetime.now()
+        # self.c2 = -1
         self.c = -1
 
     def read(self):
@@ -54,6 +57,13 @@ class Camera:
 
         if self.c % RECORD_EVERY != 0: return True, None
 
+        # self.c2 += 1
+        # EVERY = 10
+        # if self.c2 % EVERY == 0:
+        #     avg_fps = EVERY / (dt.datetime.now() - self.start).total_seconds()
+        #     self.start = dt.datetime.now()
+        #     print(f"FPS: {avg_fps:.2f}")
+
         tl = CROP[0]
         br = CROP[1]
         frame = frame[tl[1]:br[1], tl[0]:br[0]]
@@ -62,6 +72,7 @@ class Camera:
         self.queue_i = (self.queue_i + 1) % QUEUE_SIZE
         self.record_rm_frame(self.queue[self.queue_i][0])
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.fastNlMeansDenoising(gray, None, 3, 7, 10)
         self.queue[self.queue_i] = (t, gray)
 
         # Recording
@@ -110,20 +121,19 @@ class Average:
 
     def __init__(self, frames: list[cv2.Mat]):
         self.frames = frames
-        self.sum = np.zeros(frames[0][1].shape, dtype=np.float32)
+        self.sum = np.zeros(frames[0][1].shape, dtype=np.uint32)
 
     @staticmethod
-    def index_of(current: int, dt: int):
-        return (current + dt * AVERAGE_EVERY) % QUEUE_SIZE
+    def index_of(current: int, di: int):
+        return (current + di) % QUEUE_SIZE
 
     def update(self, i, gray):
         self.sum += self.frames[self.index_of(i, -1)][1]
-        self.sum -= self.frames[self.index_of(i, -1 - AVERAGE_EVERY)][1]
-        average = self.sum / AVERAGE_EVERY
-        # normalize to [0, 255]
-        average -= np.min(average)
-        average /= np.max(average)
-        average *= 255
+        self.sum -= self.frames[self.index_of(i, -1 - AVERAGE_N)][1]
+        average = self.sum / AVERAGE_N
+        # print(f"SUM(max): {np.max(self.sum)} SUM(min): {np.min(self.sum)} AVG(max): {np.max(average)} AVG(min): {np.min(average)}")
+        # cv2.imshow("average", average.astype(np.uint8))
+        # cv2.waitKey(1)
         sq_dist = np.sum((gray - average) ** 2)
         return sq_dist
 
@@ -140,6 +150,7 @@ def main():
         if not ok: break
         if gray is None: continue
         d = avg.update(cap.queue_i, gray)
+        if cap.c < QUEUE_SIZE: prev_d = d; continue
         if d > prev_d * START_THRESHOLD:
             log("MOTION DETECTED!")
             cap.record_start()
