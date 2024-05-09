@@ -1,3 +1,11 @@
+# Update: Phenomena Discovered!
+
+A couple of days after starting this system, it was able to detect and record an individual breaking into our apartment! The Police arrested the man and removed him from our flat. Here's a picture of that happening...
+
+<p align="center">
+    <img src="readme/phenomena.png" width="350" title="Thief">
+</p>
+
 # Flat Security
 
 The day prior to writing this little program, some posessions that my flatmate and I own magically gained the ability to move without their owner (us) touching them. We both love discovering new phenomena; this program might give us a helping hand!
